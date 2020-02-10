@@ -44,4 +44,5 @@ end
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'active_model_serializers', '~> 0.10.0'
 gem 'activerecord-postgis-adapter', '~> 6.0'
+gem 'rgeo', require: false
 gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
