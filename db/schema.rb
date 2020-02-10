@@ -10,22 +10,30 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_02_07_170525) do
+ActiveRecord::Schema.define(version: 2020_02_10_050012) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "postgis"
 
-  create_table "routes", force: :cascade do |t|
+  create_table "route_definitions", force: :cascade do |t|
+    t.string "name"
+    t.geometry "boundaries", limit: {:srid=>0, :type=>"st_polygon"}
     t.geometry "origin", limit: {:srid=>0, :type=>"st_point"}
     t.geometry "destination", limit: {:srid=>0, :type=>"st_point"}
-    t.geometry "boundaries", limit: {:srid=>0, :type=>"st_polygon"}
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "routes", force: :cascade do |t|
     t.bigint "vehicle_id", null: false
     t.datetime "started_at"
     t.datetime "ended_at"
     t.integer "status"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.bigint "route_definition_id", null: false
+    t.index ["route_definition_id"], name: "index_routes_on_route_definition_id"
     t.index ["vehicle_id"], name: "index_routes_on_vehicle_id"
   end
 
@@ -44,6 +52,7 @@ ActiveRecord::Schema.define(version: 2020_02_07_170525) do
     t.index ["route_id"], name: "index_waypoints_on_route_id"
   end
 
+  add_foreign_key "routes", "route_definitions"
   add_foreign_key "routes", "vehicles"
   add_foreign_key "waypoints", "routes"
 end
