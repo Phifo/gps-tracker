@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_02_10_050012) do
+ActiveRecord::Schema.define(version: 2020_02_10_173949) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -18,9 +18,9 @@ ActiveRecord::Schema.define(version: 2020_02_10_050012) do
 
   create_table "route_definitions", force: :cascade do |t|
     t.string "name"
-    t.geometry "boundaries", limit: {:srid=>0, :type=>"st_polygon"}
-    t.geometry "origin", limit: {:srid=>0, :type=>"st_point"}
-    t.geometry "destination", limit: {:srid=>0, :type=>"st_point"}
+    t.geography "boundaries", limit: {:srid=>4326, :type=>"st_polygon", :geographic=>true}
+    t.geography "origin", limit: {:srid=>4326, :type=>"st_point", :geographic=>true}
+    t.geography "destination", limit: {:srid=>4326, :type=>"st_point", :geographic=>true}
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
@@ -45,7 +45,7 @@ ActiveRecord::Schema.define(version: 2020_02_10_050012) do
   end
 
   create_table "waypoints", force: :cascade do |t|
-    t.geometry "point", limit: {:srid=>0, :type=>"st_point"}
+    t.geography "point", limit: {:srid=>4326, :type=>"st_point", :geographic=>true}
     t.bigint "route_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
