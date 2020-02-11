@@ -4,7 +4,8 @@ module Api
   module V1
     class RoutesController < ApplicationController
       def index
-        routes = Route.apply_filter(filter_params)
+        routes = Route.includes(:route_definition, :vehicle)
+                      .apply_filter(filter_params)
 
         render json: routes
       end
