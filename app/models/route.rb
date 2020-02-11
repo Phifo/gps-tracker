@@ -18,4 +18,25 @@ class Route < ApplicationRecord
                                 joins(:vehicle)
                                   .where(vehicles: { identifier: identifier })
                               }
+
+  def self.find_or_create_by_waypoint(vehicle, waypoint_point)
+    route = vehicle.routes.find_by(ended_at: nil)
+
+    return route if route.present?
+
+    route_definition = RouteDefinition.find_by!(
+      'ST_Distance(origin, ?) <= 100',
+      waypoint_point
+    )
+
+    route_definition.routes.create!(vehicle: vehicle,
+                                    started_at: Time.now,
+                                    status: 'on_route')
+  end
+
+  def check_and_change_status(point)
+    distance = route_definition.destination.distance(point)
+
+    update(status: 'finalized', ended_at: Time.now) if distance <= 100
+  end
 end

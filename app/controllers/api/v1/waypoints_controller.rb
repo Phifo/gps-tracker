@@ -3,13 +3,16 @@
 module Api
   module V1
     class WaypointsController < ApplicationController
+      before_action :set_vehicle
+
       def create
         waypoint = Waypoint.new
         waypoint.point = "POINT (#{waypoint_params[:latitude]} #{waypoint_params[:longitude]})"
-        waypoint.route = get_route(waypoint)
+        route = get_route(waypoint.point)
+        waypoint.route = route
 
         if waypoint.save
-          check_status(waypoint.route, waypoint)
+          route.check_and_change_status(waypoint.point)
 
           render json: waypoint, status: :created
         else
@@ -19,26 +22,17 @@ module Api
 
       private
 
-      def get_route(waypoint)
-        vehicle = Vehicle.find_by!(device_serial_number: waypoint_params[:device_serial_number])
-        route = vehicle.routes.find_by(ended_at: nil)
-
-        return route if route.present?
-
-        route_definition = RouteDefinition.find_by!(
-          'ST_Distance(origin, ?) <= 100',
-          waypoint.point
+      def set_vehicle
+        @vehicle = Vehicle.find_by!(
+          device_serial_number: waypoint_params[:device_serial_number]
         )
-
-        route_definition.routes.create!(vehicle: vehicle,
-                                        started_at: Time.now,
-                                        status: 'on_route')
       end
 
-      def check_status(route, waypoint)
-        distance = route.route_definition.destination.distance(waypoint.point)
-
-        route.update(status: 'finalized', ended_at: Time.now) if distance <= 100
+      def get_route(point)
+        Route.find_or_create_by_waypoint(
+          @vehicle,
+          point
+        )
       end
 
       def waypoint_params
