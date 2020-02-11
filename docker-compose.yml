@@ -1,13 +1,12 @@
 version: '3.7'
 services:
   web:
-    image: ruby:2.6.5
+    build: .
     ports:
       - "3000:3000"
     volumes:
       - .:/app
       - bundle_cache:/usr/local/bundle
-    working_dir: /app
     command: bash -c "rm -f /app/tmp/pids/server.pid && bundle install && rails s -p 3000 -b '0.0.0.0'"
     depends_on:
       - db
