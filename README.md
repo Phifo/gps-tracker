@@ -1,24 +1,39 @@
-# README
+# GPS Tracker
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+## Comenzar
 
-Things you may want to cover:
+### Docker
+Este proyecto está en docker por lo que se necesita construir las imágenes y levantarlas
+```
+docker-compose build
+docker-compose up
+```
 
-* Ruby version
+### Base de datos
+Ahora debemos crear la base de datos y ejecturar los seeds con `rails db:setup`. Esto se puede hacer anteponiento `docker-compose run web` o entrando al contenedor.
 
-* System dependencies
+```
+docker exec -it gps-tracker_web_1 bash
+rails db:setup
+```
 
-* Configuration
+ó
 
-* Database creation
+```
+docker-compose web run rails db:setup
+```
 
-* Database initialization
+### Rake task
+Hay un rake task que crea waypoints de ejemplo cada 10 segundos
 
-* How to run the test suite
+```
+rails waypoints:generate_points
+```
 
-* Services (job queues, cache servers, search engines, etc.)
+Nota: Este rake task debe ser ejecutado dentro del contenedor o sino dará problemas con el hostname
 
-* Deployment instructions
 
-* ...
+### Tests
+```
+rspec
+```
